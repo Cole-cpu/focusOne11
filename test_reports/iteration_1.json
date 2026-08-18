@@ -1,0 +1,24 @@
+{
+  "summary": "Backend auth and CRUD were exercised; parser topics and Expo web account persistence failed. Sign-in screen renders, but authenticated UI flows could not proceed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [{"endpoint": "/api/schedules/parse", "issue": "Input 'Biology 2026-06-12: cells, genetics' returns first topic ': cells' instead of 'cells'."}]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [{"flow": "create account on Expo web", "issue": "Registration response is followed by 'ExpoSecureStore.default.setValueWithKeyAsync is not a function'; token is not persisted and dashboard never loads.", "affected_testIDs": ["auth-switch", "auth-email", "auth-password", "auth-submit"]}],
+    "design_issues": [],
+    "react_native_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_focusone_api.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": ["Fix Expo web-compatible session persistence or provide a web fallback around SecureStore before retesting authenticated UI.", "Fix schedule parser to strip the optional colon from captured topic text, then rerun API regression."],
+  "critical_code_review_comments": ["frontend/src/api.ts reads EXPO_PUBLIC_BACKEND_URL while the requested protected configuration specifies EXPO_BACKEND_URL; confirm the intended variable and keep it consistent.", "Auth and all dependent dashboard flows are blocked on web by SecureStore API incompatibility.", "Focus timer completion does not log a focus session to /api/focus/log, so analytics/study-time logging is not integrated."],
+  "updated_files": ["/app/backend/tests/test_focusone_api.py", "/app/test_reports/iteration_1.json", "/app/test_reports/pytest/pytest_results.xml"],
+  "success_rate": {"backend": "0% (1 regression test failed; auth/core CRUD passed until parser assertion)", "frontend": "20% (sign-in screen only)"},
+  "seed_data_creation": "Created one TEST_ registration and related test records through the public API; no cleanup endpoint exists.",
+  "retest_needed": true,
+  "should_call_test_agent_after_fix": true,
+  "context_for_next_testing_agent": "Credentials file is empty; use unique example.com registration. First UI sign-in attempt correctly showed invalid credentials. Account creation reached API but failed on SecureStore web persistence.",
+  "rca_of_issue": "Parser regex group 3 includes the delimiter colon because the colon is matched by the trailing optional separator pattern. Web auth calls SecureStore.setItemAsync, which maps to an unavailable setValueWithKeyAsync implementation in this preview; registration likely succeeds server-side, but client throws before setting token/state.",
+  "test_credentials": " /app/memory/test_credentials.md is empty; no provided credentials."
+}

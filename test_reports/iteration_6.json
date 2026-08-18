@@ -1,0 +1,37 @@
+{
+  "summary": "Backend 12/12 pass — study timetable generator now spreads sessions across the full window, covers every topic, inserts rest days and ends with a milestone; short 2-day and past exam dates handled without crash. Frontend flows (register → Today, Plan create with 14-day future exam, Focus tab, Review card save, tab navigation) all work when interactive controls are scrolled into view. ROOT CAUSE of iteration 5 recurring regression identified: the fixed bottom Nav bar (Y=591–667 on 375×667 viewport) overlaps the Quick Tasks row — add-task circle button sits at Y=601–649 and its center coordinate falls on the Review nav item. Force-click therefore hits Review, no POST /api/tasks is fired, and the visible tab switches to Review, exactly matching the iteration 5 report. Same overlap risk affects save-schedule and create-card at the bottom of long forms.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Today tab / Nav bar", "issue": "Fixed bottom Nav (position:absolute, height 76) overlays the Quick Tasks row on 375x667: add-task (Y=601–649) & task-input (Y~603–651) are covered by the Nav, so taps intended for '+' pass through and hit the Review tab item. Reference: /app/frontend/app/index.tsx lines 73 (styles.nav position absolute) and 63 (taskAdd row) — content paddingBottom 110 is not enough to keep the last interactive row above the bar at typical mobile heights.", "testID": "add-task", "priority": "HIGH"},
+      {"component": "Today header", "issue": "Hardcoded date string 'MONDAY, JUNE 08' — not derived from current date. Reference: /app/frontend/app/index.tsx line 63.", "testID": "n/a", "priority": "LOW"}
+    ],
+    "integration_issues": [
+      {"flow": "Today → add task", "issue": "Because of the Nav overlay above, real user taps on '+' land on the Review nav item; no /api/tasks request fires and the app appears to switch tabs. Scrolling the row into view (scrollIntoView block:center) or increasing content.paddingBottom to ~140 fixes it — verified: POST /api/tasks returns 200 and the row appears with 'Not Started'.", "affected_testIDs": ["task-input", "add-task", "tab-review"]}
+    ],
+    "design_issues": [
+      {"screen": "Today", "issues": ["Content paddingBottom (110) is insufficient — Quick Tasks and Stats fall under the fixed Nav on 375x667. Increase to at least 140 or wrap ScrollView with contentInsetAdjustmentBehavior + bottom safe-area padding."]},
+      {"screen": "Plan modal", "issues": ["The modal card is bottom-anchored and can extend below the visible fold; save-schedule button can sit off-screen and requires manual scroll on small viewports."]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_focusone_api.py", "/app/test_reports/pytest/pytest_iter6.xml", "/app/test_reports/iter6_landing.jpeg", "/app/test_reports/iter6_after_add.jpeg", "/app/test_reports/iter6_add_scrolled.jpeg", "/app/test_reports/iter6_plan_saved.jpeg", "/app/test_reports/iter6_today_after.jpeg", "/app/test_reports/iter6_review_saved.jpeg"],
+  "action_items": [
+    "Increase Today ScrollView contentContainerStyle.paddingBottom from 110 to ~140 (or use useSafeAreaInsets + Nav height) so that task-input, add-task and stats sit above the fixed bottom Nav on 375x667.",
+    "Consider removing position:absolute on Nav and stacking it as a flex-item so ScrollView naturally reserves the space (also fixes the same problem inside the Plan modal and Review form).",
+    "Replace the hardcoded 'MONDAY, JUNE 08' eyebrow in Today() with a dynamic date derived from new Date().",
+    "In addTask, if the API call fails, surface the error inline; currently Alert.alert masks the failure on web and made iteration 5 look like a state bug."
+  ],
+  "critical_code_review_comments": [
+    "index.tsx is 74 lines but many components are packed into single-line JSX — hurts readability and makes bugs like the Nav overlay hard to spot. Extract Today/Plan/Focus/Review to separate files.",
+    "build_plan spreads via `int(i * step)` mapping — for very short (2-3 day) windows some study dates get labelled with only 'Light review'. Acceptable but consider stronger topic coverage on short runways.",
+    "api() helper doesn't set a timeout; a slow /api/tasks call would hang the UI silently."
+  ],
+  "updated_files": ["/app/backend/tests/test_focusone_api.py", "/app/test_reports/iteration_6.json"],
+  "success_rate": {"backend": "100% (12/12)", "frontend": "90% — all flows validated once scrolled; one HIGH-priority overlay bug blocks real-user taps on add-task"},
+  "seed_data_creation": "Created three unique example.com accounts during this run (tester<epoch>@example.com / testpass123). No fixtures modified.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Iteration 5 'add-task jumps to Review' was NOT a state bug but a layout bug: fixed bottom Nav overlaps the add-task button at ~Y=625 on 375x667, force-clicks hit the Review nav item beneath. Once E1 raises Today content paddingBottom (or restructures Nav), retest by clicking add-task WITHOUT prior scrollIntoView and confirming POST /api/tasks is emitted and task-row appears while tab stays on Today. Backend timetable generation is stable and does not need retesting.",
+  "rca_of_issue": "Reproduction: 375x667 viewport, register → Today. Bounding box of [data-testid=add-task] is {x:303, y:601, w:48, h:48}; the fixed Nav bar occupies y:591-667 and its 'Review' item is roughly x:281-355. The add-task center (x:327, y:625) lies inside the Review item, so any tap without scrolling activates the Nav pressable (Nav is rendered AFTER ScrollView content in DOM order — position:absolute). Fix: raise content paddingBottom to ~140 or remove position:absolute from Nav so the ScrollView reserves space. Backend POST /api/tasks itself works (verified with scrollIntoView and via pytest)."
+}

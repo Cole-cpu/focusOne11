@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.245" timestamp="2026-08-18T13:09:16.158509+00:00" hostname="agent-env-3e65b846-2c51-4987-8993-3420bc911c54"><testcase classname="tests.test_focusone_api" name="test_auth_and_core_crud" time="0.912"><failure message="AssertionError: assert (200 == 200 and [': cells', 'genetics'] == ['cells', 'genetics']&#10; +  where 200 = &lt;Response [200]&gt;.status_code&#10;  &#10;  At index 0 diff: ': cells' != 'cells'&#10;  &#10;  Full diff:&#10;    [&#10;  -     'cells',&#10;  +     ': cells',...&#10;  &#10;  ...Full output truncated (3 lines hidden), use '-vv' to show)">backend/tests/test_focusone_api.py:24: in test_auth_and_core_crud
+    assert parsed.status_code == 200 and parsed.json()["items"][0]["topics"] == ["cells", "genetics"]
+E   AssertionError: assert (200 == 200 and [': cells', 'genetics'] == ['cells', 'genetics']
+E    +  where 200 = &lt;Response [200]&gt;.status_code
+E     
+E     At index 0 diff: ': cells' != 'cells'
+E     
+E     Full diff:
+E       [
+E     -     'cells',
+E     +     ': cells',...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show)</failure></testcase></testsuite></testsuites>

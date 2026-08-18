@@ -1,0 +1,86 @@
+{
+  "project": "FocusOne",
+  "context": "Hybrid fullstack mobile/web student productivity app built with Expo React Native JavaScript, FastAPI, and MongoDB",
+  "design_direction": "Light-first adaptive study studio: calm enough to reduce exam anxiety, structured enough to create momentum. Use a warm paper-like surface, ink-blue information hierarchy, and one coral action color. Dark mode swaps surfaces but preserves semantic meaning.",
+  "discovery": {
+    "audience": "Students managing cycle tests, exams, assignments, and inconsistent study habits across phone, tablet, and laptop.",
+    "primary_tasks": ["Understand what to do today", "Turn raw exam schedules into a realistic plan", "Complete and prioritize tasks", "Start a focused session", "Review progress without guilt"],
+    "success_actions": ["Finish the next planned study block", "Add or parse an academic deadline", "Start a Pomodoro", "Mark a task complete", "Return tomorrow to preserve a streak"],
+    "emotional_tone": "Reassuring, quietly intelligent, tactile, non-punitive, and focused.",
+    "content_strategy": "Use short coaching copy and concrete next actions. Replace productivity guilt with language such as 'one useful block' and 'you are on track'."
+  },
+  "research": [
+    {"reference": "Student dashboard curated examples", "source": "https://sharonderik.in/student-dashboard-2/", "descriptors": ["urgent priority banner", "modular widgets", "semantic color coding", "progress bars for quick scanning"]},
+    {"reference": "Mobbin productivity patterns", "source": "https://mobbin.com/explore/mobile/app-categories/productivity", "descriptors": ["four-to-five item tab navigation", "bottom sheets for modular entry", "contextual shortcuts", "simple home dashboard"]},
+    {"reference": "SaaSFrame dashboard anatomy", "source": "https://www.saasframe.io/blog/the-anatomy-of-high-performance-saas-dashboard-design-2026-trends-patterns", "descriptors": ["user-specific perspectives", "task widget integrated into primary dashboard", "actionable empty states", "synchronized filters"]}
+  ],
+  "design_variants": [
+    {"name": "Paper Command Center", "probability": 0.32, "description": "Editorial study desk: off-white paper, navy ink, coral tabs, ruled dividers, and a timeline-first dashboard. Best balance of calm and clarity; selected direction."},
+    {"name": "Library Card Catalog", "probability": 0.22, "description": "Academic archive metaphor using index-card task rows, stamped priority labels, serif headings, and warm ochre accents. Distinctive but slightly slower for daily scanning."},
+    {"name": "Quiet Athletic Club", "probability": 0.18, "description": "Study as training: condensed display numerals, deep ink surfaces, crimson action marks, streak rings, and session scorecards. Motivating, but may feel competitive for anxious students."},
+    {"name": "Constellation Planner", "probability": 0.15, "description": "Dates and subjects form a sparse constellation map with dark navy surfaces and small luminous coral nodes. Memorable for analytics, but less immediate for task entry."},
+    {"name": "Soft Brutalist Workbook", "probability": 0.13, "description": "Pastel mint and butter surfaces with hard graphite borders, oversized labels, and playful flashcard interactions. Approachable, but less mature for exam planning."}
+  ],
+  "typography": {
+    "heading": "Bodoni Moda or Cormorant Garamond, 600/700; use for page titles and key section moments, never Inter.",
+    "body": "DM Sans or IBM Plex Sans, 400/500; highly legible for schedules, forms, and dense task metadata.",
+    "numeric": "IBM Plex Mono, 500/600; use for timer values, dates, durations, and streak counts.",
+    "rules": ["H1 equivalent max 48px on web and 34px on mobile; tight leading and tracking-tight.", "Labels are uppercase, 11px, letterSpacing 1.8px.", "Body uses 15-16px with relaxed line height.", "Do not use Inter, Roboto, Open Sans, or Lato for headings."]
+  },
+  "colors": {
+    "archetype": "Organic & Earthy with Swiss functional contrast",
+    "light": {"canvas": "#F5F1E8", "surface": "#FFFDF8", "surfaceAlt": "#EAE5D9", "ink": "#182333", "mutedInk": "#59616A", "primary": "#1F4E5F", "action": "#D95D4F", "success": "#47735B", "warning": "#B77936", "line": "#D7D0C3"},
+    "dark": {"canvas": "#182333", "surface": "#223042", "surfaceAlt": "#2B3A4B", "ink": "#F7F3EA", "mutedInk": "#B7C0C7", "primary": "#9BC6C4", "action": "#F27B6C", "success": "#9BC39F", "warning": "#E2B36E", "line": "#405061"},
+    "rules": ["Never use pure black or #808080.", "No full-screen gradients; texture and solid layers create depth.", "Reserve coral for primary CTAs, active states, and urgent deadlines.", "Verify normal text at 4.5:1 and large text at 3:1 minimum."]
+  },
+  "layouts": {
+    "navigation": "Visible desktop top header with FocusOne mark, Today, Plan, Tasks, Focus, Recall, and a primary Add schedule button. On mobile use a solid or opaque blurred header plus a 4-item bottom tab bar: Today, Plan, Focus, Review.",
+    "dashboard": "High-density but breathable: greeting and urgent banner first; then today's timeline as the dominant block, upcoming exams as a narrow supporting block, and study analytics/streak as compact blocks. Use align-items:start and leave intentional negative space.",
+    "plan_input": "Three entry modes as segmented tabs: Manual, Paste, Upload. Parsing preview must show extracted subject/date/topics before generation. Use a bottom sheet or modal for confirmation, not a crowded inline form.",
+    "task_tracker": "Flat rectangular list with priority rail, status control, due date, and progress. Group by Today, This week, Later. Empty states contain one actionable CTA.",
+    "focus": "Timer is the visual anchor, with preset chips, sound selector, session subject, and a single start/pause CTA. Avoid competing widgets.",
+    "grid": "Mobile-first single column. Tablet/web dashboard uses 8-column asymmetric grid: timeline spans 5, urgent/upcoming spans 3, analytics spans 3, streak spans 2, and a breathing cell remains open where possible. Avoid equal-square bento grids.",
+    "spacing": "Use 24-32px section gaps, 16-24px inner padding, 12px row gaps. Containers with borders always use at least 20px internal padding.",
+    "radii": "Use 12px for primary surfaces, 8px for controls, and pill shapes only for tags and compact controls. Avoid excessive rounded cards."
+  },
+  "component_name": {
+    "screens": ["AuthScreen", "TodayScreen", "PlanScreen", "TasksScreen", "FocusScreen", "RecallScreen", "SettingsScreen"],
+    "components": ["OpaqueHeader", "BottomTabBar", "UrgencyBanner", "StudyTimeline", "ExamWeekList", "StreakMetric", "SubjectHoursChart", "ScheduleEntrySheet", "ParsePreview", "TaskRow", "PriorityTag", "PomodoroDial", "SoundPicker", "FlashcardStack", "ReminderRow", "ThemeToggle"],
+    "component_path": "/app/frontend/app and /app/frontend/src/components",
+    "implementation": "Use .js files, React Native StyleSheet and platform-aware Pressable/View/Text. Existing project is Expo Router with no Tailwind config or web CSS. Use Expo primitives and existing dependencies rather than inventing shadcn web components. Add a component only when it owns behavior or repeated visual logic."
+  },
+  "motion": {
+    "entrance": "Stagger timeline rows by 35ms with opacity and translateY; keep under 240ms.",
+    "interaction": "Pressable buttons scale to 0.98 and shift color; task completion animates checkbox and progress width; tab changes crossfade content.",
+    "timer": "Use a subtle progress ring animation and a gentle completion pulse, never flashing or bouncing continuously.",
+    "loading": "Use skeleton rows for dashboard data and a determinate parsing/generation state.",
+    "accessibility": "Respect reduced motion via AccessibilityInfo; disable decorative transforms when requested. Never communicate status by motion alone.",
+    "rule": "Do not use universal transition: all. Keep transforms, opacity, and colors explicit."
+  },
+  "visual_enhancers": {
+    "texture": "Add a very subtle paper grain using a low-opacity local SVG pattern or layered background View; decorative texture has accessible aria-hidden equivalent where applicable.",
+    "depth": "Use stacked solid surfaces, 1px tinted borders, and restrained ambient shadows. No generic glossy gradients.",
+    "icons": "Use @expo/vector-icons already installed; choose one consistent family, with accessible labels and 20-22px sizing.",
+    "unconventional_decisions": ["Treat the day as a printed editorial timeline rather than a generic card dashboard to make the next action feel tangible.", "Use coral only as a kinetic mark, so the student's eye learns that coral means act now.", "Show rest days as intentional quiet rows, not empty failures, to normalize sustainable planning."]
+  },
+  "media": {"needed": false, "image_urls": [], "instructions": "FocusOne is a utility app; imagery would compete with the study task. Use abstract paper grain and icons only. Do not use placeholder image URLs."},
+  "3d libraries": {"needed": false, "reason": "The product needs clarity and fast mobile performance, not immersion. Use Reanimated for the timer ring rather than R3F."},
+  "accessibility": {
+    "test_ids": "Every Pressable, TextInput, tab, task row, timer control, reminder row, key metric, generated-plan confirmation, error, and auth action must have data-testid in kebab-case. In React Native use testID={\"...\"} and centralize values in /app/frontend/constants/testIds.",
+    "contrast": "Use ink on light surfaces and warm-white on dark surfaces. Never rely on muted text for essential deadline or status information.",
+    "input": "All inputs have visible labels, focus border, validation copy, and keyboard-aware scrolling. Use accessible and accessibilityLabel on icon-only actions.",
+    "touch": "Minimum 44x44 hit target. Provide pressed and focused states with explicit foreground color.",
+    "theme": "Use useColorScheme for adaptive initial theme and persist a user override in AsyncStorage. Keep the theme toggle discoverable in Settings."
+  },
+  "data_and_flow": {
+    "auth": "First launch is sign-in. Provide email/password and a clear create-account route; persist auth state securely with expo-secure-store. Do not show dashboard before auth resolves.",
+    "sync": "FastAPI is the source of truth for account, schedules, generated plans, tasks, flashcards, and logs; optimistic UI should reconcile with server errors.",
+    "parsing": "MVP supports manual form, paste parsing, and file upload. Parsing and plan generation should show preview, confidence/error states, and explicit confirmation. If backend generation is not available, label any local fallback as MOCKED.",
+    "reminders": "MVP uses in-app reminders only. Device push notifications are deferred and must not be implied as working.",
+    "analytics": "Log focus sessions by subject and duration; present weekly subject hours with color-blind-safe distinct tones and a plain-text summary.",
+    "empty_states": "Use empathetic copy plus a single next action: Add your first exam, Start a focus block, or Create a recall card."
+  },
+  "general_ui_ux_design_guidelines": ["Never center the entire app container or set text-align center globally.", "Every page has visible navigation appropriate to viewport.", "Do not use emoji as icons.", "Use generous spacing and preserve negative space.", "Never use a fully transparent header, overlay, dropdown, or content surface.", "Use solid/opaque surfaces with blur only where content remains readable.", "Avoid default Vercel/Stripe styling, generic gradients, and equal-card bento grids.", "Use Sonner only if a web toast is required; on native prefer an accessible inline status or platform feedback consistent with the project.", "Keep all copy left-aligned unless a centered timer or deliberate empty state improves hierarchy.", "Test loading, offline, parse failure, auth failure, no-schedule, and reduced-motion states."] ,
+  "instructions_to_main_agent": "Implement the Paper Command Center direction first. Inspect existing Expo Router files before editing. Keep JavaScript files as requested even though starter routes are currently TypeScript; if converting routes, preserve Expo Router conventions. Do not add Tailwind/web CSS assumptions. Build functional MVP flows with explicit mocked labels for unavailable integrations, especially device notifications or AI generation. Ensure every key element has testID and verify with lint plus manual route smoke tests.",
+  "implementation_status": {"backend": "Only generic status endpoints exist currently; FocusOne APIs are not implemented.", "device_notifications": "NOT WORKING / deferred for MVP; use in-app reminders.", "ai_plan_generation": "NOT IMPLEMENTED in current backend; any fallback must be explicitly MOCKED.", "images": "No external images required."}
+}
