@@ -29,6 +29,8 @@ FocusOne is a mobile-first student productivity and study planning app that help
 - Added JWT auth, MongoDB-backed domain APIs, parser punctuation handling, and CRUD regression coverage.
 - Added web-safe session persistence, upload picker entry, immediate task reconciliation, and focus logging.
 - Verified sign-in preview, account registration, dashboard, task creation, backend API flow, and parser with automated checks.
+- Rewrote `build_plan` to spread topics evenly across the full runway (no clustering), give each topic balanced Learn/Recall coverage, add periodic rest days, close with a full-review day, and gracefully handle past/short windows. Verified via API across 14/5/2-day and past-date scenarios.
+- Applied a dark blue theme as the app default (deep navy canvas, bright blue accents) and added "Brought to you by Vantage Intelligence" branding with the extracted Vantage logo on the sign-in screen and app footer.
 
 ## Implemented (2026-08-18)
 - Built FocusOne auth, dashboard, Plan, Focus, and Review mobile screens.
