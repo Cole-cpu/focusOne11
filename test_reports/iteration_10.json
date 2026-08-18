@@ -1,0 +1,29 @@
+{
+  "summary": "Vantage AI (tutor) fully verified end-to-end. Backend: 9/9 pytest passed (test_vantage_ai.py) covering POST /api/ai/chat Socratic behaviour, concept explanation, no-LaTeX, chronological persistence, DELETE clears, personalisation using real seeded exam/task data (no fabricated stats), and GET/PUT /api/profile round-trip. Frontend at 375x667: registered fresh account ai+<ts>@example.com, Tutor tab shows VANTAGE AI + greeting + all 6 quick-action chips (qa-explain/quiz/make/summarise/create/help) + all grade chips 8..12 + tutor-subject/tutor-topic inputs. Selecting grade-10 highlights it (bg turns colors.action rgb(46,107,230)). Tapping qa-quiz prefills tutor-input with 'Quiz me with 5 questions on my current topic.' (send NOT triggered, as required). Typing 'Explain photosynthesis in one paragraph.' and tapping tutor-send: msg-user bubble appears, 'Vantage is thinking…' loader visible, msg-assistant bubble rendered ~5-15s later with clean plain text ('Photosynthesis is the process by which plants…'), no $$ or \\frac markers. tutor-newchat clears the thread. Regression: all 5 bottom tabs switch correctly; Today next-milestone, Plan add-schedule, Focus AMBIENT SOUND label, Review create-card all render fine — no layout break from 5th tab.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_10.json",
+    "/app/backend/tests/test_vantage_ai.py",
+    "/app/test_reports/pytest/pytest_iter10.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "index.tsx now contains inline Tutor/Today/Plan/Focus/Review components in a single ~145-line file with very long single-line JSX. Functional and passing every test, but splitting each screen into its own file would improve maintainability. Non-blocking.",
+    "server.py /api/ai/chat only persists grade to the profile (not subject/topic). Intentional per spec but worth confirming — subject/topic are used only for the current turn.",
+    "Backend uses `find({...}, {'_id': 0})` correctly everywhere and public() strips _id from schedules/tasks/flashcards — no ObjectId leakage."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_vantage_ai.py (new)"
+  ],
+  "success_rate": {"backend": "100% (9/9)", "frontend": "100%"},
+  "seed_data_creation": "Ephemeral pytest users ai_<hex>@example.com and Playwright user ai+<ts>@example.com. Playwright user has one Biology exam (created via Tutor personalisation test flow was backend-only) — small residual data in Mongo, non-blocking.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Vantage AI feature ships cleanly. Backend endpoints: POST /api/ai/chat, GET /api/ai/messages, DELETE /api/ai/messages, GET/PUT /api/profile. EMERGENT_LLM_KEY is set; Claude Sonnet 4.6 non-streaming responses arrive within 5-30s. Persona VANTAGE_PERSONA enforces plain-text math (verified reply had zero $$/\\frac). Tutor screen renders OUTSIDE the shared ScrollView using react-native-keyboard-controller KCAvoidingView; on web this is a no-op which is fine and messages scroll correctly (onContentSizeChange->scrollToEnd)."
+}

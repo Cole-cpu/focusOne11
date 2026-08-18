@@ -31,6 +31,8 @@ FocusOne is a mobile-first student productivity and study planning app that help
 - Verified sign-in preview, account registration, dashboard, task creation, backend API flow, and parser with automated checks.
 - Rewrote `build_plan` to spread topics evenly across the full runway (no clustering), give each topic balanced Learn/Recall coverage, add periodic rest days, close with a full-review day, and gracefully handle past/short windows. Verified via API across 14/5/2-day and past-date scenarios.
 - Applied a dark blue theme as the app default (deep navy canvas, bright blue accents) and added "Brought to you by Vantage Intelligence" branding with the extracted Vantage logo on the sign-in screen and app footer.
+- Added time-accurate greeting (morning/afternoon/evening from device time), a white-noise / ambient sound player on Focus (White/Pink/Brown/Rain loops via expo-audio), and local device deadline reminders (expo-notifications, 3-day/1-day/morning-of, no keys, web no-op) with a Remind-me toggle + Open-Settings banner. Fixed bottom-nav overlap by reserving nav height on the scroll.
+- Built **Vantage AI** tutor (own bottom tab "Tutor"): Claude Sonnet 4.6 via emergentintegrations Universal key. Warm/patient persona, Socratic guidance (hint→answer), concise plain-text-math responses, quick actions (Explain/Quiz/Flashcards/Summarise/Study plan/Homework), Grade→Subject→Topic context, and personalisation from the student's real exams/tasks/focus data (never fabricates stats). Backend: POST/GET/DELETE /api/ai/* + GET/PUT /api/profile with per-user conversation persistence. Verified end-to-end by testing agent (backend 9/9 + full frontend flow).
 
 ## Implemented (2026-08-18)
 - Built FocusOne auth, dashboard, Plan, Focus, and Review mobile screens.

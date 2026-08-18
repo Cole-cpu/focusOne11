@@ -1,0 +1,36 @@
+{
+  "summary": "Round-8 features (greeting, ambient sound, reminder toggle, notification no-op on web) all pass on the 375x667 mobile viewport. Full regression: register (qa+<ts>@example.com / secret123) -> Today loads with dynamic eyebrow 'TUESDAY, AUGUST 18' and greeting 'Good afternoon.' (matches server ~15:00 UTC, NOT hardcoded morning). Tapping next-milestone navigates to Plan; add-exam modal opens; reminder-toggle (testID='reminder-toggle') is visible and defaults ON and toggles off/on cleanly. Saved 'Biology / 2026-09-15 / Cells, genetics, ecology' via save-schedule -> modal closes, exam listed under UPCOMING MILESTONES, and Today's milestone card updates to 'Biology · 2026-09-15 · 3 topics to cover'. Focus tab renders 4 ambient chips (sound-white, sound-pink, sound-brown, sound-rain); tapping white shows 'PLAYING' badge and highlight; tapping pink transfers PLAYING to pink and clears white; tapping pink a second time removes the badge (no crash). Timer-start shows 'IN SESSION'. Review create-card fires with no crash. Notifications on web are a silent no-op (only informational warnings 'Listening to push token changes is not yet fully supported on web' - expected). NO red screen, NO pageerror. ONE bug carried over from iterations 6/7: at exactly 375x667 the fixed bottom Nav overlays the QUICK TASKS add-task button on a fresh (empty) Today (task-input & add-task computed y=601, nav y=591-667), so clicking add-task hits the Review nav tab instead of the plus button. Confirmed working at 375x900 viewport (task added + toggled complete with line-through). This blocks the task-add regression item on stock iPhone SE viewport.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Today > Quick Tasks add-task", "issue": "On a fresh account at 375x667 the add-task Pressable renders at y=601 (h=48) while the fixed bottom Nav occupies y=591..667. Clicking add-task is intercepted by the Nav's Review tab, causing tab-switch instead of task creation. Same for task-input focus which becomes hard to reach. Verified: same click succeeds at 375x900. Fix: increase content paddingBottom (currently 150) OR make the Nav non-fixed OR move the QUICK TASKS block higher above stats.", "testID": "add-task", "priority": "HIGH"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Today (mobile 375x667)", "issues": ["Fixed bottom Nav (76px) overlays interactive add-task/task-input on empty accounts. Consider paddingBottom >= 180 or moving Nav to be part of layout flow."]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/iter8_final.jpeg",
+    "/app/test_reports/iter8_task_final.jpeg"
+  ],
+  "action_items": [
+    "Fix Nav overlap on Today: raise content paddingBottom in styles.content from 150 to ~180-200, OR reduce the stats/statAction bottom margin so add-task sits above the 76px fixed Nav on 375x667.",
+    "(Nice-to-have) Add scrollIndicator or a spacer View at end of Today to guarantee last row is above Nav on any viewport."
+  ],
+  "critical_code_review_comments": [
+    "index.tsx line 15 loads all 4 sound assets at module top with require(); OK but eagerly bundles WAVs into the web build. Consider lazy require inside selectSound to shrink initial JS.",
+    "index.tsx selectSound catches errors silently with empty catch — a failed player.replace() will leave sound state unset with no user feedback.",
+    "reminders.ts localDateAt is called 3x for the same dateStr in scheduleDeadlineReminders (line 75, 78, 79). Minor DRY issue; compute once and clone.",
+    "index.tsx still >700-char single-line JSX in Today/Plan/Focus/Review functions - hard to review; splitting into separate files is overdue.",
+    "api() helper still has no timeout — slow calls hang the UI (carried over from iter7)."
+  ],
+  "updated_files": ["/app/test_reports/iteration_8.json"],
+  "success_rate": {"backend": "not retested this round (frontend-only scope)", "frontend": "greeting/reminder/sound/save-schedule/timer/create-card = 100%; task-add regression FAILS at 375x667 due to Nav overlap (passes at 375x900)"},
+  "seed_data_creation": "Registered 2 fresh accounts qa+<epoch>@example.com/secret123 and 1 Biology exam (2026-09-15, 3 topics).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "The mobile-viewport Nav overlap issue on Today is REAL and reproducible. To repro: 375x667 viewport, register fresh account, immediately try to click add-task — click is intercepted by Nav's Review tab. All other iter8 features pass. The Focus AMBIENT SOUND controls work perfectly on web (expo-audio + wav loop). Notifications on web only emit warnings, never errors — confirmed no-op.",
+  "rca_of_issue": "Root cause of task-add regression: styles.nav is position:'absolute' bottom:0 with height:76, but styles.content only has paddingBottom:150. When Today content is short (empty task list), the add-task circleButton renders at ~y=601 on 375x667. The Nav's Review tab lies at x≈281-375, y≈591-667 — directly on top of the add-task button (x=303, y=601). Playwright/Web click resolves the topmost element (Nav's Pressable) so the tap becomes a tab-switch. Fix: raise paddingBottom or restructure Nav to be flex-based."
+}
